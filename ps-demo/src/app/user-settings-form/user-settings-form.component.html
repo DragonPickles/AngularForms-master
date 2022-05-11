@@ -1,11 +1,21 @@
 <div class="container">
     <h2>User Settings</h2>
-    <form #form="ngForm" ngNativeValidate>
+    <form #form="ngForm" (ngSubmit)="onSubmit(form)">
         <div class="form-group">
             <label for="name">Name</label>
             <input id="name" name="name" class="form-control" [(ngModel)]="userSettings.name"
-                required>
+                required #nameField="ngModel"
+                (blur)="onBlur(nameField)"
+                [class.field-error]="form.submitted && nameField.invalid">
+
+            <div [hidden]="!form.submitted || nameField.valid"
+                class="alert alert-danger">
+                Enter a name
+            </div>
         </div>
+        
+
+        <h3>{{ nameField.name }}</h3>
 
         <div class="form-check form-group">
             <input class="form-check-input" type="checkbox" 
@@ -43,9 +53,10 @@
                   <label for="subscriptionType">Subscribtion Type</label>
                   <select class="form-control" id="subscriptionType" 
                     name="subscriptionType" [(ngModel)]="userSettings.subsscriptionType">>
-                      <option>Monthly</option>
-                      <option>Annual</option>
-                      <option>Lifetime</option>
+                    <option *ngFor="let type of subscriptionTypes | async">
+                        {{ type }}
+                    </option>
+                        
                     </select>
               </div>
 
@@ -67,7 +78,11 @@
                     class="form-control">
               </div>
             -->
+        </div>
 
+        <div [hidden]="!postError"
+            class="alert alert-danger">
+            {{ postErrorMessage }}
         </div>
         <button class="btn btn-primary">Send</button>
     </form>
